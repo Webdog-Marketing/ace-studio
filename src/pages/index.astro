@@ -1,0 +1,211 @@
+---
+import Base from '../layouts/Base.astro';
+import { Image, inferRemoteSize } from 'astro:assets';
+import { site } from '../site.config.js';
+import { getServices, getTeam, getGallery } from '../lib/airtable.js';
+
+const [services, team, gallery] = await Promise.all([getServices(), getTeam(), getGallery()]);
+
+// Airtable photos: read the real size, then let Astro resize and host a copy.
+async function sized(url, target) {
+  const { width, height } = await inferRemoteSize(url);
+  const w = Math.min(target, width);
+  return { src: url, width: w, height: Math.round((height * w) / width) };
+}
+const teamItems = await Promise.all(
+  team.map(async (m) => ({ ...m, img: m.photo ? await sized(m.photo, 720) : null }))
+);
+const galleryItems = await Promise.all(
+  gallery.map(async (g) => ({ ...g, img: await sized(g.photo, 900) }))
+);
+
+const money = (n) => `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
+const { street, city, postcode } = site.address;
+const igUrl = (h) => `https://www.instagram.com/${h}/`;
+---
+<Base>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap nav">
+      <a href="#top" class="nav-logo" aria-label="ACE Studio, back to top">
+        <img src="/images/logo.png" alt="ACE Studio" width="104" height="44" />
+      </a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="#services">Prices</a></li>
+          <li><a href="#team">Team</a></li>
+          {galleryItems.length > 0 && <li><a href="#gallery">Gallery</a></li>}
+          <li><a href="#find-us">Find us</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn-solid btn-sm" href={site.bookingUrl}>Book now</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section id="top" class="hero wall wall-dim">
+      <div class="wrap hero-inner">
+        <h1 class="hero-logo">
+          <img src="/images/logo.png" alt="ACE Studio Barbershop" width="620" height="263" />
+        </h1>
+        <p class="hero-tag">Cuts. Coffee. Culture.</p>
+        <p class="hero-copy">
+          High-level grooming in the heart of Exeter. Sharp fades, tailored scissor work and a space built on street culture, creativity and community.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-solid" href={site.bookingUrl}>Book an appointment</a>
+          <a class="btn btn-line" href={igUrl(site.instagram)}>@{site.instagram}</a>
+        </div>
+        {site.announcement && <p class="hero-note">{street}, {city}. {site.announcement}.</p>}
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="stack">
+          <h2 class="h2">More than a haircut</h2>
+          <p>
+            Blending an industrial, stripped-back aesthetic with a modern edge, ACE Studio delivers high-level grooming in an environment inspired by street culture, creativity and community. From sharp fades to tailored scissor work, every cut is executed with attention to detail and a commitment to quality.
+          </p>
+          <p>
+            This isn’t your average barbershop. With a laid-back but elevated atmosphere, curated music and a focus on experience, ACE Studio is where people come not just to look fresh, but to feel it.
+          </p>
+        </div>
+        <div class="wall studio-panel" aria-hidden="true">
+          <img src="/images/mark.png" alt="" width="236" height="188" />
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="section wall wall-deep">
+      <div class="wrap stack-lg">
+        <div class="section-head">
+          <h2 class="h2">Prices</h2>
+          <p class="muted">Student prices with valid student ID. All bookings are made online through Barbr.</p>
+        </div>
+        <ul class="price-grid">
+          {services.map((s) => (
+            <li class="price-card">
+              <div class="price-top">
+                <h3 class="h3">{s.name}</h3>
+                {s.comingSoon ? (
+                  <span class="badge">Coming soon</span>
+                ) : (
+                  s.price != null && <span class="price">{s.from && <small>from </small>}{money(s.price)}</span>
+                )}
+              </div>
+              {s.studentPrice != null && !s.comingSoon && <p class="student">Students {money(s.studentPrice)}</p>}
+              {s.description && <p class="muted">{s.description}</p>}
+            </li>
+          ))}
+        </ul>
+        <div><a class="btn btn-solid" href={site.bookingUrl}>Book on Barbr</a></div>
+      </div>
+    </section>
+
+    <section id="team" class="section">
+      <div class="wrap stack-lg">
+        <h2 class="h2">Meet the barbers</h2>
+        <ul class="team-grid">
+          {teamItems.map((m) => (
+            <li class="member">
+              {m.img ? (
+                <Image src={m.img.src} width={m.img.width} height={m.img.height} alt={`${m.name}, ${m.role} at ACE Studio`} class="member-photo" />
+              ) : (
+                <div class="member-photo member-empty" aria-hidden="true">
+                  <img src="/images/mark.png" alt="" width="236" height="188" />
+                </div>
+              )}
+              <h3 class="h3">{m.name}</h3>
+              <p class="role">{m.role}</p>
+              {m.instagram && <a href={igUrl(m.instagram)}>@{m.instagram}</a>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    {galleryItems.length > 0 && (
+      <section id="gallery" class="section wall">
+        <div class="wrap stack-lg">
+          <div class="section-head">
+            <h2 class="h2 ink">Fresh out the chair</h2>
+            <a class="ink-link" href={igUrl(site.instagram)}>See more on Instagram</a>
+          </div>
+          <ul class="gallery-grid">
+            {galleryItems.map((g) => (
+              <li><Image src={g.img.src} width={g.img.width} height={g.img.height} alt={g.alt} loading="lazy" /></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )}
+
+    <section class="section panel">
+      <div class="wrap narrow">
+        <div class="stack">
+          <h2 class="h2">Official Uppercut Deluxe dealer</h2>
+          <p>
+            We’re proud to stock Uppercut Deluxe, one of the most respected names in modern barbering. Built for performance and style, Uppercut products deliver strong hold, clean finishes and reliable results, whether you’re in the chair or styling at home.
+          </p>
+          <p class="muted">Available in-store, recommended by our barbers and used daily in the shop.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="find-us" class="section">
+      <div class="wrap split">
+        <div class="stack">
+          <h2 class="h2">Find us</h2>
+          <address class="address">{street}<br />{city} {postcode}</address>
+          <div class="btn-row">
+            <a class="btn btn-line" href={site.googleMapsUrl}>Get directions</a>
+            <a class="text-link" href={site.googleReviewUrl}>Leave us a Google review</a>
+          </div>
+
+          {site.hours.length > 0 && (
+            <div class="stack-sm">
+              <h3 class="h3">Opening hours</h3>
+              <dl class="rows">
+                {site.hours.map((h) => (<div><dt>{h.days}</dt><dd>{h.hours}</dd></div>))}
+              </dl>
+            </div>
+          )}
+
+          <div class="stack-sm">
+            <h3 class="h3">Parking</h3>
+            <p class="muted">There are on-street and car park options nearby. We recommend these. Pay with RingGo using the location code.</p>
+            <dl class="rows">
+              {site.parking.map((p) => (<div><dt>{p.name}</dt><dd class="code">{p.code}</dd></div>))}
+            </dl>
+          </div>
+        </div>
+        <div class="map">
+          <iframe
+            src={site.mapEmbedUrl}
+            title={`Map showing ACE Studio at ${street}, ${city}`}
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wall wall-deep">
+    <div class="wrap stack-lg">
+      <div class="footer-top">
+        <img src="/images/logo.png" alt="ACE Studio" width="240" height="102" />
+        <a class="btn btn-solid" href={site.bookingUrl}>Book now</a>
+      </div>
+      <div class="footer-bottom">
+        <p>{site.name}, {street}, {city} {postcode}</p>
+        <ul class="footer-links">
+          <li><a href={igUrl(site.instagram)}>Instagram</a></li>
+          <li><a href={site.googleMapsUrl}>Google reviews</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+</Base>

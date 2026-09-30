@@ -1,0 +1,70 @@
+---
+import '../styles/global.css';
+import { site } from '../site.config.js';
+
+const GTM_ID = import.meta.env.PUBLIC_GTM_ID;
+const GSC = import.meta.env.PUBLIC_GSC_VERIFICATION;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BarberShop',
+  name: site.name,
+  url: site.url,
+  image: `${site.url}/og-image.jpg`,
+  logo: `${site.url}/images/logo.png`,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    postalCode: site.address.postcode,
+    addressCountry: 'GB',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.address.lat, longitude: site.address.lng },
+  hasMap: site.googleMapsUrl,
+  sameAs: [`https://www.instagram.com/${site.instagram}/`],
+  priceRange: '££',
+};
+---
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{site.title}</title>
+  <meta name="description" content={site.description} />
+  <link rel="canonical" href={site.url + '/'} />
+  <meta name="theme-color" content="#141312" />
+
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={site.title} />
+  <meta property="og:description" content={site.description} />
+  <meta property="og:url" content={site.url + '/'} />
+  <meta property="og:image" content={site.url + '/og-image.jpg'} />
+  <meta property="og:locale" content="en_GB" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  {GSC && <meta name="google-site-verification" content={GSC} />}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Montserrat:wght@600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+  {GTM_ID && (
+    <script is:inline define:vars={{ GTM_ID }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',GTM_ID);
+    </script>
+  )}
+</head>
+<body>
+  {GTM_ID && (
+    <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  )}
+  <slot />
+</body>
+</html>
