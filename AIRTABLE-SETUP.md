@@ -42,7 +42,7 @@ The CSV import brings every field in as text. Change these types: click the fiel
 | Order | Number |
 | Show | Checkbox |
 
-The two "Barber TBC" rows are unticked, so they stay hidden. Fill in the name, add a photo and tick **Show** when they join.
+To add a new barber later, add a row, fill in the name, role and photo, and tick **Show**. To take someone off the site without deleting them, untick **Show**.
 
 **Gallery**
 

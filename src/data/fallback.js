@@ -16,6 +16,9 @@ export const fallbackServices = [
 
 export const fallbackTeam = [
   { name: 'Jake Ranger', role: 'Owner', instagram: 'jr_aceoffades' },
+  { name: 'Sam', role: 'Barber' },
   { name: 'Luke', role: 'Barber' },
-  { name: 'Ollie', role: 'Barber' },
+  { name: 'Finn', role: 'Barber' },
+  { name: 'Olly', role: 'Barber' },
+  { name: 'Lewis', role: 'Barber' },
 ];
