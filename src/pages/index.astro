@@ -21,6 +21,7 @@ const galleryItems = await Promise.all(
 
 const money = (n) => `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const { street, city, postcode } = site.address;
+const hasAnalytics = Boolean(import.meta.env.PUBLIC_GTM_ID);
 const igUrl = (h) => `https://www.instagram.com/${h}/`;
 ---
 <Base>
@@ -224,6 +225,8 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
         <ul class="footer-links">
           <li><a href={igUrl(site.instagram)}>Instagram</a></li>
           <li><a href={site.googleMapsUrl}>Google reviews</a></li>
+          {hasAnalytics && <li><button type="button" class="link-button" data-cookie-settings>Cookie settings</button></li>}
+          <li>Website by <a href="https://www.webdog.marketing/">Webdog Marketing</a></li>
         </ul>
       </div>
     </div>

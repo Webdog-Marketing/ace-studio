@@ -1,0 +1,55 @@
+---
+// Asks for consent before Google Analytics sets cookies (Google Consent Mode v2).
+// Default consent is set to "denied" in Base.astro before Tag Manager loads.
+---
+<div id="cookie-banner" class="cookie" role="region" aria-label="Cookie choices" hidden>
+  <p>
+    We’d like to use analytics cookies to understand how people find and use this site. They’re only set if you accept, and you can change your mind any time using “Cookie settings” at the bottom of the page.
+  </p>
+  <div class="cookie-actions">
+    <button type="button" class="btn btn-line btn-sm" data-consent="denied">Reject</button>
+    <button type="button" class="btn btn-line btn-sm" data-consent="granted">Accept</button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var KEY = 'ace-consent';
+    var el = document.getElementById('cookie-banner');
+    if (!el) return;
+
+    function getChoice() {
+      try { return localStorage.getItem(KEY); } catch (e) { return null; }
+    }
+    function clearAnalyticsCookies() {
+      var host = location.hostname.replace(/^www\./, '');
+      document.cookie.split(';').forEach(function (c) {
+        var name = c.split('=')[0].trim();
+        if (name.indexOf('_ga') === 0) {
+          ['', '; domain=' + host, '; domain=.' + host].forEach(function (d) {
+            document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + d;
+          });
+        }
+      });
+    }
+
+    if (!getChoice()) el.hidden = false;
+
+    el.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-consent]');
+      if (!btn) return;
+      var choice = btn.getAttribute('data-consent');
+      try { localStorage.setItem(KEY, choice); } catch (err) {}
+      if (typeof window.gtag === 'function') window.gtag('consent', 'update', { analytics_storage: choice });
+      if (choice === 'denied') clearAnalyticsCookies();
+      el.hidden = true;
+    });
+
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-cookie-settings]')) {
+        el.hidden = false;
+        el.querySelector('button').focus();
+      }
+    });
+  })();
+</script>
