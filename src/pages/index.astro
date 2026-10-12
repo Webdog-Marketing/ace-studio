@@ -3,6 +3,11 @@ import Base from '../layouts/Base.astro';
 import { Image, inferRemoteSize } from 'astro:assets';
 import { site } from '../site.config.js';
 import { getServices, getTeam, getGallery } from '../lib/airtable.js';
+import shopInterior from '../assets/studio/shop-interior.jpg';
+import shopFront from '../assets/studio/shop-front-view.jpg';
+import shopFloor from '../assets/studio/shop-floor.jpg';
+import stylingClay from '../assets/studio/styling-clay.jpg';
+import footballShirt from '../assets/studio/football-shirt.jpg';
 
 const [services, team, gallery] = await Promise.all([getServices(), getTeam(), getGallery()]);
 
@@ -12,12 +17,32 @@ async function sized(url, target) {
   const w = Math.min(target, width);
   return { src: url, width: w, height: Math.round((height * w) / width) };
 }
+// Photos kept in the repo (src/assets/team/<first name>.jpg) are used when a
+// team member has no photo in Airtable.
+const localTeamPhotos = import.meta.glob('../assets/team/*.jpg', { eager: true, import: 'default' });
+const localPhoto = (name) => localTeamPhotos[`../assets/team/${name.split(' ')[0].toLowerCase()}.jpg`] || null;
+
 const teamItems = await Promise.all(
-  team.map(async (m) => ({ ...m, img: m.photo ? await sized(m.photo, 720) : null }))
+  team.map(async (m) => ({
+    ...m,
+    img: m.photo ? await sized(m.photo, 720) : null,
+    local: m.photo ? null : localPhoto(m.name),
+  }))
 );
-const galleryItems = await Promise.all(
+
+const remoteGallery = await Promise.all(
   gallery.map(async (g) => ({ ...g, img: await sized(g.photo, 900) }))
 );
+// Shown until gallery photos are added in Airtable.
+const localGallery = [
+  { src: shopFloor, alt: 'Barbers at work on the shop floor at ACE Studio, Longbrook Street, Exeter' },
+  { src: shopFront, alt: 'Inside ACE Studio barbershop with hexagon ceiling lights and neon spade sign' },
+  { src: stylingClay, alt: 'ACE Studio styling clay paste, strong hold and matte finish' },
+  { src: footballShirt, alt: 'ACE Studio football shirt made by WOVN' },
+];
+const galleryItems = remoteGallery.length
+  ? remoteGallery.map((g) => ({ src: g.img.src, width: g.img.width, height: g.img.height, alt: g.alt }))
+  : localGallery;
 
 const money = (n) => `£${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const { street, city, postcode } = site.address;
@@ -58,7 +83,7 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
           <a class="btn btn-solid" href={site.bookingUrl}>Book an appointment</a>
           <a class="btn btn-line" href={igUrl(site.instagram)}>@{site.instagram}</a>
         </div>
-        {site.announcement && <p class="hero-note">{street}, {city}. {site.announcement}.</p>}
+        <p class="hero-note">{street}, {city}{site.announcement && `. ${site.announcement}`}</p>
       </div>
     </section>
 
@@ -73,9 +98,13 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
             This isn’t your average barbershop. With a laid-back but elevated atmosphere, curated music and a focus on experience, ACE Studio is where people come not just to look fresh, but to feel it.
           </p>
         </div>
-        <div class="wall studio-panel" aria-hidden="true">
-          <img src="/images/mark.png" alt="" width="236" height="188" />
-        </div>
+        <Image
+          src={shopInterior}
+          alt="A barber giving a skin fade at ACE Studio, with the neon spade sign and concrete walls"
+          widths={[640, 1024]}
+          sizes="(min-width: 900px) 50vw, 100vw"
+          class="studio-photo"
+        />
       </div>
     </section>
 
@@ -113,6 +142,8 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
             <li class="member">
               {m.img ? (
                 <Image src={m.img.src} width={m.img.width} height={m.img.height} alt={`${m.name}, ${m.role} at ACE Studio`} class="member-photo" />
+              ) : m.local ? (
+                <Image src={m.local} width={480} alt={`${m.name}, ${m.role} at ACE Studio`} class="member-photo" />
               ) : (
                 <div class="member-photo member-empty" aria-hidden="true">
                   <img src="/images/mark.png" alt="" width="236" height="188" />
@@ -131,12 +162,12 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
       <section id="gallery" class="section wall">
         <div class="wrap stack-lg">
           <div class="section-head">
-            <h2 class="h2 ink">Fresh out the chair</h2>
+            <h2 class="h2 ink">Inside the studio</h2>
             <a class="ink-link" href={igUrl(site.instagram)}>See more on Instagram</a>
           </div>
           <ul class="gallery-grid">
             {galleryItems.map((g) => (
-              <li><Image src={g.img.src} width={g.img.width} height={g.img.height} alt={g.alt} loading="lazy" /></li>
+              <li><Image src={g.src} width={g.width ?? 720} height={g.height} alt={g.alt} loading="lazy" /></li>
             ))}
           </ul>
         </div>

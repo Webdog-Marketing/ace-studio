@@ -21,8 +21,8 @@ export const site = {
     lng: -3.5270814,
   },
 
-  // Short line under the logo in the hero. Set to '' to hide it after launch.
-  announcement: 'Opening 10 October',
+  // Optional extra line after the address in the hero, e.g. 'Now open Sundays'. Leave as '' for none.
+  announcement: '',
 
   // Add opening hours when confirmed, e.g.
   // { days: 'Tuesday to Friday', hours: '9am to 6pm' }

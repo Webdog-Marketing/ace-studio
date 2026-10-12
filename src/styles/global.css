@@ -94,9 +94,7 @@ a:hover { color: var(--concrete); }
 .hero .btn-row { justify-content: center; }
 .hero-note { max-width: none; font-family: var(--label); font-weight: 600; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream); }
 
-.studio-panel { aspect-ratio: 4 / 5; display: grid; place-items: center; }
-.studio-panel img { width: 40%; opacity: .92; }
-@media (max-width: 760px) { .studio-panel { aspect-ratio: 16 / 10; } .studio-panel img { width: 28%; } }
+.studio-photo { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 
 /* Prices */
 .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
@@ -113,7 +111,7 @@ a:hover { color: var(--concrete); }
 /* Team */
 .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 170px), 1fr)); gap: 32px 20px; }
 .member { display: flex; flex-direction: column; gap: 10px; }
-.member-photo { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--panel); margin-bottom: 6px; filter: grayscale(0.15); }
+.member-photo { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: center top; background: var(--panel); margin-bottom: 6px; }
 .member-empty { display: grid; place-items: center; border: 1px solid var(--line); }
 .member-empty img { width: 34%; opacity: .35; }
 .role { font-family: var(--label); font-weight: 600; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--concrete); }
