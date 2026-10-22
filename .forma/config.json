@@ -7,5 +7,6 @@
   "publicDir": "public",
   "siteUrl": "https://acestudiobarbershop.com/",
   "editorOrigin": "https://formacms.app",
-  "contentPath": "public/forma/content.json"
+  "contentPath": "public/forma/content.json",
+  "liveSiteId": "axu3HLUz7Jj3Y5mIKop7XujizfPuNvLDxnHfxL2eMXg"
 }
