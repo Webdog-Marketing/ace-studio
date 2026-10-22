@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "repository": "Webdog-Marketing/ace-studio",
+  "root": "",
+  "framework": "Astro",
+  "entry": "src/layouts/Base.astro",
+  "publicDir": "public",
+  "siteUrl": "https://acestudiobarbershop.com/",
+  "editorOrigin": "https://formacms.app",
+  "contentPath": "public/forma/content.json"
+}
