@@ -3,7 +3,7 @@
 export const fallbackServices = [
   { name: 'Skin Fade / Taper', price: 23, studentPrice: 20, from: true,
     description: 'A precision-blended cut starting from grade 0 or below, creating a smooth transition from skin to length.' },
-  { name: 'Skin Fade / Taper & Beard', price: 30, studentPrice: 26,
+  { name: 'Skin Fade / Taper & Beard', price: 30, studentPrice: 28,
     description: 'Skin or taper fade with beard trim, shaped with blade and foiled shaver under the neck, creating a smooth transition from skin to length.' },
   { name: 'Standard Cut', price: 18, studentPrice: 16,
     description: 'A barbershop classic. Neatly tapered at the back and sides with balanced length on top, offering a clean, timeless finish that suits any style.' },

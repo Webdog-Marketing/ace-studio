@@ -3,11 +3,11 @@ import Base from '../layouts/Base.astro';
 import { Image, inferRemoteSize } from 'astro:assets';
 import { site } from '../site.config.js';
 import { getServices, getTeam, getGallery } from '../lib/airtable.js';
-import shopInterior from '../assets/studio/shop-interior.jpg';
-import shopFront from '../assets/studio/shop-front-view.jpg';
-import shopFloor from '../assets/studio/shop-floor.jpg';
-import stylingClay from '../assets/studio/styling-clay.jpg';
-import footballShirt from '../assets/studio/football-shirt.jpg';
+import shopInterior from '../assets/photos/barber-shop-exeter-skin-fade.jpg';
+import shopFront from '../assets/photos/barber-shop-exeter-interior.jpg';
+import shopFloor from '../assets/photos/exeter-barbers-shop-floor.jpg';
+import stylingClay from '../assets/photos/ace-studio-styling-clay-exeter.jpg';
+import footballShirt from '../assets/photos/ace-studio-barber-shop-football-shirt.jpg';
 
 const [services, team, gallery] = await Promise.all([getServices(), getTeam(), getGallery()]);
 
@@ -17,10 +17,15 @@ async function sized(url, target) {
   const w = Math.min(target, width);
   return { src: url, width: w, height: Math.round((height * w) / width) };
 }
-// Photos kept in the repo (src/assets/team/<first name>.jpg) are used when a
-// team member has no photo in Airtable.
-const localTeamPhotos = import.meta.glob('../assets/team/*.jpg', { eager: true, import: 'default' });
-const localPhoto = (name) => localTeamPhotos[`../assets/team/${name.split(' ')[0].toLowerCase()}.jpg`] || null;
+// Photos kept in the repo (src/assets/photos/team-<first name>-....jpg) are used
+// when a team member has no photo in Airtable.
+const localTeamPhotos = import.meta.glob('../assets/photos/team-*.jpg', { eager: true, import: 'default' });
+const localPhoto = (name) => {
+  const first = name.split(' ')[0].toLowerCase();
+  const key = Object.keys(localTeamPhotos).find((k) => k.startsWith(`../assets/photos/team-${first}-`));
+  return key ? localTeamPhotos[key] : null;
+};
+const teamAlt = (m) => `${m.name}, ${m.role === 'Owner' ? 'owner and barber' : 'barber'} at ACE Studio barber shop, Exeter`;
 
 const teamItems = await Promise.all(
   team.map(async (m) => ({
@@ -35,10 +40,10 @@ const remoteGallery = await Promise.all(
 );
 // Shown until gallery photos are added in Airtable.
 const localGallery = [
-  { src: shopFloor, alt: 'Barbers at work on the shop floor at ACE Studio, Longbrook Street, Exeter' },
-  { src: shopFront, alt: 'Inside ACE Studio barbershop with hexagon ceiling lights and neon spade sign' },
-  { src: stylingClay, alt: 'ACE Studio styling clay paste, strong hold and matte finish' },
-  { src: footballShirt, alt: 'ACE Studio football shirt made by WOVN' },
+  { src: shopFloor, alt: 'Exeter barbers at work on the shop floor at ACE Studio, Longbrook Street' },
+  { src: shopFront, alt: 'Inside ACE Studio barber shop in Exeter, with hexagon ceiling lights and neon spade sign' },
+  { src: stylingClay, alt: 'ACE Studio styling clay, available in-store at our Exeter barber shop' },
+  { src: footballShirt, alt: 'ACE Studio barber shop football shirt made by WOVN' },
 ];
 const galleryItems = remoteGallery.length
   ? remoteGallery.map((g) => ({ src: g.img.src, width: g.img.width, height: g.img.height, alt: g.alt }))
@@ -72,12 +77,13 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
   <main id="main">
     <section id="top" class="hero wall wall-dim">
       <div class="wrap hero-inner">
-        <h1 class="hero-logo">
-          <img src="/images/logo.png" alt="ACE Studio Barbershop" width="620" height="263" />
-        </h1>
+        <div class="hero-logo">
+          <img src="/images/logo.png" alt="ACE Studio" width="620" height="263" />
+        </div>
         <p class="hero-tag">Cuts. Coffee. Culture.</p>
+        <h1 class="hero-title">Barber shop in Exeter city centre</h1>
         <p class="hero-copy">
-          High-level grooming in the heart of Exeter. Sharp fades, tailored scissor work and a space built on street culture, creativity and community.
+          ACE Studio is a barber shop on Longbrook Street in the heart of Exeter. Our Exeter barbers specialise in sharp skin fades, tapers, tailored scissor work and beard trims, in a space built on street culture, creativity and community.
         </p>
         <div class="btn-row">
           <a class="btn btn-solid" href={site.bookingUrl}>Book an appointment</a>
@@ -100,7 +106,7 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
         </div>
         <Image
           src={shopInterior}
-          alt="A barber giving a skin fade at ACE Studio, with the neon spade sign and concrete walls"
+          alt="Barber giving a skin fade at ACE Studio, a barber shop in Exeter city centre"
           widths={[640, 1024]}
           sizes="(min-width: 900px) 50vw, 100vw"
           class="studio-photo"
@@ -136,14 +142,14 @@ const igUrl = (h) => `https://www.instagram.com/${h}/`;
 
     <section id="team" class="section">
       <div class="wrap stack-lg">
-        <h2 class="h2">Meet the barbers</h2>
+        <h2 class="h2">Meet our Exeter barbers</h2>
         <ul class="team-grid">
           {teamItems.map((m) => (
             <li class="member">
               {m.img ? (
-                <Image src={m.img.src} width={m.img.width} height={m.img.height} alt={`${m.name}, ${m.role} at ACE Studio`} class="member-photo" />
+                <Image src={m.img.src} width={m.img.width} height={m.img.height} alt={teamAlt(m)} class="member-photo" />
               ) : m.local ? (
-                <Image src={m.local} width={480} alt={`${m.name}, ${m.role} at ACE Studio`} class="member-photo" />
+                <Image src={m.local} width={480} alt={teamAlt(m)} class="member-photo" />
               ) : (
                 <div class="member-photo member-empty" aria-hidden="true">
                   <img src="/images/mark.png" alt="" width="236" height="188" />

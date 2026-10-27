@@ -90,7 +90,8 @@ a:hover { color: var(--concrete); }
 .hero-logo { margin: 0; width: min(620px, 86%); }
 .hero-logo img { width: 100%; }
 .hero-tag { font-family: var(--label); font-weight: 600; font-size: clamp(13px, 1.4vw, 16px); letter-spacing: 0.5em; text-transform: uppercase; color: var(--cream); margin-right: -0.5em; }
-.hero-copy { font-size: 18px; color: var(--cream); max-width: 34rem; }
+.hero-title { margin: 0; font-family: var(--display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; font-size: clamp(24px, 3vw, 38px); line-height: 1.1; color: var(--cream); max-width: 22ch; }
+.hero-copy { font-size: 18px; color: var(--cream); max-width: 38rem; }
 .hero .btn-row { justify-content: center; }
 .hero-note { max-width: none; font-family: var(--label); font-weight: 600; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream); }
 

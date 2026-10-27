@@ -2,9 +2,9 @@
 export const site = {
   name: 'ACE Studio Barbershop',
   url: 'https://acestudiobarbershop.com',
-  title: 'ACE Studio Barbershop | Barber in Exeter City Centre',
+  title: 'Barber Shop in Exeter | ACE Studio Barbers, Longbrook Street',
   description:
-    'Skin fades, tapers, classic cuts and beard trims at 35 Longbrook Street, Exeter. Official Uppercut Deluxe stockist. Book online with ACE Studio.',
+    'ACE Studio is a barber shop in Exeter city centre. Our Exeter barbers specialise in skin fades, tapers, classic cuts and beard trims. Book online today.',
 
   bookingUrl: 'https://barbr.me/acestudiobarbershop',
   instagram: 'acestudio_uk',
